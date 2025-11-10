@@ -203,6 +203,153 @@
             background: #1a2a6c;
             color: white;
         }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .report-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .report-option {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #1a2a6c;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a2a6c;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background: #1a2a6c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0f1a4a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -264,6 +411,34 @@
                     <h3>Admins</h3>
                     <div class="number" id="totalAdmins">0</div>
                     <p>System administrators</p>
+                </div>
+            </div>
+
+            <!-- Report Generation Section -->
+            <div class="table-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px;">
+                    <h3>Generate Reports</h3>
+                </div>
+                <div class="report-options">
+                    <div class="report-option">
+                        <select id="reportType" class="form-control">
+                            <option value="">Select Report Type</option>
+                            <option value="users">User Report</option>
+                            <option value="students">Student Report</option>
+                            <option value="examiners">Examiner Report</option>
+                            <option value="system">System Usage Report</option>
+                        </select>
+                    </div>
+                    <div class="report-option">
+                        <select id="reportFormat" class="form-control">
+                            <option value="csv">CSV Format</option>
+                            <option value="pdf">PDF Format</option>
+                            <option value="print">Print Format</option>
+                        </select>
+                    </div>
+                    <div class="report-option">
+                        <button class="btn btn-info" onclick="generateReport()">Generate Report</button>
+                    </div>
                 </div>
             </div>
 
@@ -412,6 +587,63 @@
         </div>
     </div>
 
+    <!-- Edit User Modal -->
+    <div class="modal" id="editUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit User Information</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="editUserAlert"></div>
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId">
+                    <div class="form-group">
+                        <label for="editUserType">Account Type</label>
+                        <select id="editUserType" required>
+                            <option value="">Select Account Type</option>
+                            <option value="student">Student</option>
+                            <option value="examiner">Examiner</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editFullName">Full Name</label>
+                        <input type="text" id="editFullName" placeholder="Enter full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email Address</label>
+                        <input type="email" id="editEmail" placeholder="Enter email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDepartment">Department</label>
+                        <select id="editDepartment" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Software Engineering">Software Engineering</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Web Design">Web Design</option>
+                            <option value="Principles of Design">Principles of Design</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Administration">Administration</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Status</label>
+                        <select id="editStatus" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditUserModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -490,12 +722,17 @@
         // Set up admin event listeners
         function setupAdminEventListeners() {
             const addUserForm = document.getElementById('addUserForm');
+            const editUserForm = document.getElementById('editUserForm');
             const userSearch = document.getElementById('userSearch');
             const roleFilter = document.getElementById('roleFilter');
             const statusFilter = document.getElementById('statusFilter');
             
             if (addUserForm) {
                 addUserForm.addEventListener('submit', handleAddUser);
+            }
+            
+            if (editUserForm) {
+                editUserForm.addEventListener('submit', handleEditUser);
             }
             
             if (userSearch) {
@@ -513,14 +750,21 @@
             // Close modal events
             const closeModalBtns = document.querySelectorAll('.close-modal');
             closeModalBtns.forEach(btn => {
-                btn.addEventListener('click', closeAddUserModal);
+                btn.addEventListener('click', function() {
+                    closeAddUserModal();
+                    closeEditUserModal();
+                });
             });
             
             // Close modal when clicking outside
             window.addEventListener('click', (e) => {
                 const addUserModal = document.getElementById('addUserModal');
+                const editUserModal = document.getElementById('editUserModal');
                 if (e.target === addUserModal) {
                     closeAddUserModal();
+                }
+                if (e.target === editUserModal) {
+                    closeEditUserModal();
                 }
             });
         }
@@ -642,6 +886,38 @@
             }
         }
 
+        // Show edit user modal
+        function showEditUserModal(userId) {
+            const editUserModal = document.getElementById('editUserModal');
+            const editUserAlert = document.getElementById('editUserAlert');
+            
+            if (editUserModal && editUserAlert) {
+                editUserModal.style.display = 'flex';
+                editUserAlert.innerHTML = '';
+                
+                // Find the user to edit
+                const users = JSON.parse(localStorage.getItem('universityUsers') || '[]');
+                const user = users.find(u => u.id === userId);
+                
+                if (user) {
+                    document.getElementById('editUserId').value = user.id;
+                    document.getElementById('editUserType').value = user.type;
+                    document.getElementById('editFullName').value = user.name;
+                    document.getElementById('editEmail').value = user.email;
+                    document.getElementById('editDepartment').value = user.department;
+                    document.getElementById('editStatus').value = user.status;
+                }
+            }
+        }
+
+        // Close edit user modal
+        function closeEditUserModal() {
+            const editUserModal = document.getElementById('editUserModal');
+            if (editUserModal) {
+                editUserModal.style.display = 'none';
+            }
+        }
+
         // Handle add user form submission
         function handleAddUser(e) {
             e.preventDefault();
@@ -694,9 +970,55 @@
             }, 1500);
         }
 
+        // Handle edit user form submission
+        function handleEditUser(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('editUserId').value;
+            const userType = document.getElementById('editUserType').value;
+            const fullName = document.getElementById('editFullName').value;
+            const email = document.getElementById('editEmail').value;
+            const department = document.getElementById('editDepartment').value;
+            const status = document.getElementById('editStatus').value;
+            const editUserAlert = document.getElementById('editUserAlert');
+            
+            // Update user in storage
+            const users = JSON.parse(localStorage.getItem('universityUsers') || '[]');
+            const userIndex = users.findIndex(u => u.id === userId);
+            
+            if (userIndex !== -1) {
+                // Check if email is already used by another user
+                const emailExists = users.some(u => u.email === email && u.id !== userId);
+                if (emailExists) {
+                    showAlert(editUserAlert, 'Email already in use by another user!', 'error');
+                    return;
+                }
+                
+                // Update user information
+                users[userIndex].type = userType;
+                users[userIndex].name = fullName;
+                users[userIndex].email = email;
+                users[userIndex].department = department;
+                users[userIndex].status = status;
+                
+                localStorage.setItem('universityUsers', JSON.stringify(users));
+                
+                // Show success message
+                showAlert(editUserAlert, 'User information updated successfully!', 'success');
+                
+                // Update dashboard and close modal after delay
+                setTimeout(() => {
+                    closeEditUserModal();
+                    updateAdminDashboard();
+                }, 1500);
+            } else {
+                showAlert(editUserAlert, 'User not found!', 'error');
+            }
+        }
+
         // Edit user
         function editUser(userId) {
-            alert(`Edit user functionality for ${userId} would be implemented here.`);
+            showEditUserModal(userId);
         }
 
         // Reset user password
@@ -736,6 +1058,150 @@
                     userAlert.innerHTML = '';
                 }, 3000);
             }
+        }
+
+        // Generate report
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const reportFormat = document.getElementById('reportFormat').value;
+            
+            if (!reportType) {
+                alert('Please select a report type!');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('universityUsers') || '[]');
+            let reportData = [];
+            let reportTitle = '';
+            
+            // Prepare data based on report type
+            switch(reportType) {
+                case 'users':
+                    reportData = users;
+                    reportTitle = 'All Users Report';
+                    break;
+                case 'students':
+                    reportData = users.filter(u => u.type === 'student');
+                    reportTitle = 'Students Report';
+                    break;
+                case 'examiners':
+                    reportData = users.filter(u => u.type === 'examiner');
+                    reportTitle = 'Examiners Report';
+                    break;
+                case 'system':
+                    // For system report, we'll create a summary
+                    reportData = [
+                        { metric: 'Total Users', value: users.length },
+                        { metric: 'Total Students', value: users.filter(u => u.type === 'student').length },
+                        { metric: 'Total Examiners', value: users.filter(u => u.type === 'examiner').length },
+                        { metric: 'Total Admins', value: users.filter(u => u.type === 'admin').length },
+                        { metric: 'Active Users', value: users.filter(u => u.status === 'active').length },
+                        { metric: 'Inactive Users', value: users.filter(u => u.status === 'inactive').length }
+                    ];
+                    reportTitle = 'System Usage Report';
+                    break;
+            }
+            
+            // Generate report based on format
+            if (reportFormat === 'csv') {
+                downloadCSV(reportData, reportTitle);
+            } else if (reportFormat === 'pdf') {
+                alert('PDF generation would be implemented here. For now, showing data in console.');
+                console.log(`${reportTitle}:`, reportData);
+            } else if (reportFormat === 'print') {
+                printReport(reportData, reportTitle);
+            }
+            
+            const userAlert = document.getElementById('userAlert');
+            showAlert(userAlert, `${reportTitle} generated successfully!`, 'success');
+            
+            // Clear alert after 3 seconds
+            setTimeout(() => {
+                userAlert.innerHTML = '';
+            }, 3000);
+        }
+
+        // Download CSV report
+        function downloadCSV(data, title) {
+            if (data.length === 0) {
+                alert('No data to export!');
+                return;
+            }
+            
+            // Create CSV content
+            const headers = Object.keys(data[0]);
+            let csvContent = headers.join(',') + '\n';
+            
+            data.forEach(item => {
+                const row = headers.map(header => {
+                    // Escape commas and quotes in values
+                    let value = item[header] || '';
+                    if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+                        value = '"' + value.replace(/"/g, '""') + '"';
+                    }
+                    return value;
+                });
+                csvContent += row.join(',') + '\n';
+            });
+            
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Print report
+        function printReport(data, title) {
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>${title}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { color: #1a2a6c; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${title}</h1>
+                    <p>Generated on: ${new Date().toLocaleString()}</p>
+            `);
+            
+            if (data.length > 0) {
+                const headers = Object.keys(data[0]);
+                printWindow.document.write(`
+                    <table>
+                        <thead>
+                            <tr>
+                                ${headers.map(header => `<th>${header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(item => `
+                                <tr>
+                                    ${headers.map(header => `<td>${item[header]}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `);
+            } else {
+                printWindow.document.write('<p>No data available</p>');
+            }
+            
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
         }
 
         // Show alert message
